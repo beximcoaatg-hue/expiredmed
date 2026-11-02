@@ -1,0 +1,30 @@
+name: Render Remotion 16x9 Video
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  render:
+    name: Render 1080p MP4
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install Linux Chromium Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
+      - name: Install NPM Packages
+        run: npm install
+      - name: Render Full MP4 with Audio
+        run: npx remotion render src/index.ts ExpiredMedicineMaster out/expired-medicine-arnold.mp4
+      - name: Upload Rendered MP4 Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: expired-medicine-arnold-mp4
+          path: out/expired-medicine-arnold.mp4
